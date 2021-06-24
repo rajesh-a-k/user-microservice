@@ -1,12 +1,12 @@
-package com.tm.user.response;
+package com.tm.user.request;
 
-public class UserResponse {
+public class UserRequest {
 	
 	private String userName;
+	private String password;
 	private String role;
 	private String firstName;
 	private String lastName;
-	
 	/**
 	 * @return the userName
 	 */
@@ -18,6 +18,18 @@ public class UserResponse {
 	 */
 	public void setUserName(String userName) {
 		this.userName = userName;
+	}
+	/**
+	 * @return the password
+	 */
+	public String getPassword() {
+		return password;
+	}
+	/**
+	 * @param password the password to set
+	 */
+	public void setPassword(String password) {
+		this.password = password;
 	}
 	/**
 	 * @return the role

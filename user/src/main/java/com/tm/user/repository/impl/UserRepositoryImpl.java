@@ -4,10 +4,16 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import org.hibernate.exception.ConstraintViolationException;
+
 import com.tm.user.constants.UserConstants;
+import com.tm.user.exception.UserException;
 import com.tm.user.model.User;
 import com.tm.user.repository.UserRepository;
+import com.tm.user.request.UserRequest;
 import com.tm.user.response.UserResponse;
+
+
 
 public class UserRepositoryImpl implements UserRepository{
 	
@@ -15,12 +21,16 @@ public class UserRepositoryImpl implements UserRepository{
 	static EntityManager entityManager;
 	
 	@Override
-	public UserResponse addNewUser(User user) {
-		beginTransaction();
+	public UserResponse addNewUser(User user) throws UserException {
 		UserResponse userResponse = new UserResponse();
-		user.setRole(UserConstants.PASSENGER);
-		entityManager.persist(user);
-		endTransaction();
+		try {
+			beginTransaction();
+			user.setRole(UserConstants.PASSENGER);
+			entityManager.persist(user);
+			endTransaction();
+		}catch(Exception e) {
+			throw new UserException("This username already exists.Please try a different one");
+		}
 		userResponse.setFirstName(user.getFirstName());
 		userResponse.setLastName(user.getLastName());
 		userResponse.setRole(user.getRole());
@@ -42,14 +52,36 @@ public class UserRepositoryImpl implements UserRepository{
 
 
 	@Override
-	public String validateUser(UserResponse userResponse) {
+	public UserResponse validateUser(UserRequest userRequest) throws UserException {
 		beginTransaction();
-		User user = entityManager.find(User.class, userResponse.getUserName());
+		User user = entityManager.find(User.class, userRequest.getUserName());
 		endTransaction();
-		if(user!=null && user.getPassword().equals(userResponse.getPassword())) {
-			return "LOGIN SUCCESS!";
+		UserResponse userResponse = new UserResponse();
+		if(user!=null && user.getPassword().equals(userRequest.getPassword())) {
+			userResponse.setFirstName(user.getFirstName());
+			userResponse.setLastName(user.getLastName());
+			userResponse.setRole(user.getRole());
+			userResponse.setUserName(user.getUserName());	
+		}else {
+			throw new UserException("INVALID LOGIN CREDENTIALS");
 		}
-		return "LOGIN FAILED";
+		return userResponse;
+	}
+
+	@Override
+	public String assignAdminRole(String userId) throws UserException {
+		beginTransaction();
+		try {
+			User user = entityManager.find(User.class, userId);
+			if(user!=null) {
+				user.setRole(UserConstants.ADMIN);
+				entityManager.merge(user);
+			}
+		}catch(Exception e) {
+			throw new UserException("Some error occured while updating to admin role");
+		}
+		endTransaction();
+		return "userId: " + userId + " is updated to admin role successfully";
 	}
 
 }
