@@ -7,7 +7,7 @@ import com.tm.user.response.UserResponse;
 
 public interface UserRepository {
 
-	UserResponse addNewUser(User user) throws UserException;
+	String addNewUser(UserRequest userRequest) throws UserException;
 
 	UserResponse validateUser(UserRequest userRequest) throws UserException;
 

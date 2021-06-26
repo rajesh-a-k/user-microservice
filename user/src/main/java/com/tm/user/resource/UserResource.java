@@ -48,9 +48,9 @@ public class UserResource {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response registerNewUser(User user) throws UserException {
-    	UserResponse userResponse = userRepo.addNewUser(user);
-    	return Response.ok(userResponse).build();
+    public Response registerNewUser(UserRequest userRequest) throws UserException {
+    	String response = userRepo.addNewUser(userRequest);
+    	return Response.ok(response).build();
     }
     
     /**
