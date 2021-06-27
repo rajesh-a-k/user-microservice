@@ -13,9 +13,6 @@ public class User {
 	@Column(name="USER_NAME")
 	private String userName;
 	
-	@Column(name="PASSWORD")
-	private String password;
-	
 	@Column(name="ROLE")
 	private String role;
 	
@@ -24,6 +21,12 @@ public class User {
 	
 	@Column(name="LAST_NAME")
 	private String lastName;
+	
+	@Column(name="SALT")
+	private String salt;
+	
+	@Column(name="SECURE_PASSWORD")
+	private String securePassword;
 
 	
 	/**
@@ -38,20 +41,6 @@ public class User {
 	 */
 	public void setUserName(String userName) {
 		this.userName = userName;
-	}
-
-	/**
-	 * @return the password
-	 */
-	public String getPassword() {
-		return password;
-	}
-
-	/**
-	 * @param password the password to set
-	 */
-	public void setPassword(String password) {
-		this.password = password;
 	}
 
 	/**
@@ -94,6 +83,34 @@ public class User {
 	 */
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+
+	/**
+	 * @return the salt
+	 */
+	public String getSalt() {
+		return salt;
+	}
+
+	/**
+	 * @param salt the salt to set
+	 */
+	public void setSalt(String salt) {
+		this.salt = salt;
+	}
+
+	/**
+	 * @return the securePassword
+	 */
+	public String getSecurePassword() {
+		return securePassword;
+	}
+
+	/**
+	 * @param securePassword the securePassword to set
+	 */
+	public void setSecurePassword(String securePassword) {
+		this.securePassword = securePassword;
 	}
 	
 	

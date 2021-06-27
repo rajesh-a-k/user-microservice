@@ -4,20 +4,21 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
-
 import com.tm.user.constants.UserConstants;
 import com.tm.user.exception.UserException;
 import com.tm.user.model.User;
 import com.tm.user.repository.UserRepository;
+
 import com.tm.user.request.UserRequest;
 import com.tm.user.response.UserResponse;
+import com.tm.user.utils.PasswordUtils;
 
 
 
 public class UserRepositoryImpl implements UserRepository{
 	
-	static EntityManagerFactory factory;
-	static EntityManager entityManager;
+	EntityManagerFactory factory;
+	EntityManager entityManager;
 	
 	@Override
 	public String addNewUser(UserRequest userRequest) throws UserException {
@@ -27,10 +28,14 @@ public class UserRepositoryImpl implements UserRepository{
 		if(user!=null) {
 			throw new UserException(UserConstants.DUPLICATE_USER_NAME);
 		}
+		String salt = PasswordUtils.getSalt(30);
+		String mySecurePassword = PasswordUtils.generateSecurePassword(userRequest.getPassword(), salt);
 		User newUser = new User();
 		newUser.setFirstName(userRequest.getFirstName());
 		newUser.setUserName(userRequest.getUserName());
-		newUser.setPassword(userRequest.getPassword());
+		//newUser.setPassword(userRequest.getPassword());
+		newUser.setSalt(salt);
+		newUser.setSecurePassword(mySecurePassword);
 		newUser.setRole(UserConstants.PASSENGER);
 		if(userRequest.getLastName()!=null)
 			newUser.setLastName(userRequest.getLastName());
@@ -62,8 +67,12 @@ public class UserRepositoryImpl implements UserRepository{
 		beginTransaction();
 		User user = entityManager.find(User.class, userRequest.getUserName());
 		endTransaction();
+		if(user==null) {
+			throw new UserException(UserConstants.LOGIN_ERROR);
+		}
+		boolean passwordMatch = PasswordUtils.verifyUserPassword(userRequest.getPassword(),user.getSecurePassword(),user.getSalt());
 		UserResponse userResponse = new UserResponse();
-		if(user!=null && user.getPassword().equals(userRequest.getPassword())) {
+		if(passwordMatch) {
 			userResponse.setFirstName(user.getFirstName());
 			userResponse.setLastName(user.getLastName());
 			userResponse.setRole(user.getRole());
