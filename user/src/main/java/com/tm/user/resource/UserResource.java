@@ -69,19 +69,4 @@ public class UserResource {
     	return Response.status(200).entity(userResponse).build();
     }
     
-    /**
-     * Method handling HTTP PUT requests for assigning admin role. The object
-     *  will be sent to the client as "text/plain" media type.
-     *
-     * @return User that will be returned as a text/plain response.
-     * @throws UserException 
-     */
-    @Path("assignadmin/{userId}")
-    @PUT
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response updateUserRole(@PathParam("userId") String userId) throws UserException {
-    	String message = userRepo.assignAdminRole(userId);
-		return Response.ok(message).build();
-    }
-    
 }
